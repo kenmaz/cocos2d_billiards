@@ -44,5 +44,7 @@
 		<key>opengles-1</key>
 		<true/>
 	</dict>
+	<key>UIApplicationExitsOnSuspend</key>
+	<true/>
 </dict>
 </plist>
