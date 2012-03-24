@@ -12,7 +12,7 @@
 #import "GLES-Render.h"
 #import "ContactListener.h"
 
-@interface BilliardsTable : CCLayer {
+@interface BilliardsTable : CCLayer <CCTargetedTouchDelegate> {
     b2World* world;
     ContactListener* contactListener;
     

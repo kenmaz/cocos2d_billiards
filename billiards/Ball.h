@@ -21,5 +21,10 @@
 
 +(CGFloat)ballWidth;
 -(void)resetColor;
+-(BOOL)isMainBall;
+-(BOOL) isTouchForMe:(CGPoint)location;
+
++(void)setupBalls:(CCNode*)node world:(b2World*)world;
++(void)resetBalls:(CCNode*)board world:(b2World*)world;
 
 @end

@@ -15,5 +15,6 @@
 #define PTM_RATIO 32
 
 enum {
-    kTagBoard
+    kTagBoard,
+    kTagMainBall
 };

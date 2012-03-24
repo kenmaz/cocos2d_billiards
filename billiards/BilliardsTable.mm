@@ -17,7 +17,9 @@
 -(void) enableBox2dDebugDrawing;
 @end
 
-@implementation BilliardsTable
+@implementation BilliardsTable {
+    Board* board;
+}
 
 +(id)scene {
     CCScene* scene = [CCScene node];
@@ -26,55 +28,30 @@
     return scene;
 }
 
-static const ccColor3B ccBRAWN = {110,0,0};
-
 -(id)init {
     if ((self = [super init])) {
         
         [self initBox2dWorld];
-        [self enableBox2dDebugDrawing];
+        //[self enableBox2dDebugDrawing];
         
         // a bright background is desireable for this pinball table
 		CCLayerColor* colorLayer = [CCLayerColor layerWithColor:ccc4(222, 222, 222, 255)];
 		[self addChild:colorLayer z:-3];
 
-        Board* board = [Board setupBoradWithWorld:world];
+        board = [Board setupBoradWithWorld:world];
         [self addChild:board z:-2 tag:kTagBoard];
         
-        CGPoint cp = [Helper screenCenter];
-        float bw = [Ball ballWidth];
-        float dy = 0.83;
+        [Ball setupBalls:board world:world];
+
+        [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:NO];
         
-        Ball* ball = [Ball ballWithWorld:world at:ccp(cp.x, cp.y - 120) touchable:YES];
-        [self addChild:ball z:-1];
-
-        //1列目
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x            ,cp.y + 90) color:ccYELLOW]];
-        //2列目
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw*0.5   ,cp.y + 90 + (bw * dy)) color:ccGREEN]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw*0.5   ,cp.y + 90 + (bw * dy)) color:ccORANGE]];
-        //3列目
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x            ,cp.y + 90 + (bw * dy)*2) color:ccGREEN]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw       ,cp.y + 90 + (bw * dy)*2) color:ccBLACK]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw       ,cp.y + 90 + (bw * dy)*2) color:ccBLUE]];
-        //4列目
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw*0.5   ,cp.y + 90 + (bw * dy)*3) color:ccORANGE]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw*0.5   ,cp.y + 90 + (bw * dy)*3) color:ccBRAWN]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw*1.5   ,cp.y + 90 + (bw * dy)*3) color:ccBRAWN]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw*1.5   ,cp.y + 90 + (bw * dy)*3) color:ccRED]];
-        //5列目
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x            ,cp.y + 90 + (bw * dy)*4) color:ccORANGE]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw       ,cp.y + 90 + (bw * dy)*4) color:ccMAGENTA]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw       ,cp.y + 90 + (bw * dy)*4) color:ccMAGENTA]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw*2     ,cp.y + 90 + (bw * dy)*4) color:ccRED]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw*2     ,cp.y + 90 + (bw * dy)*4) color:ccBLUE]];
-
         [self scheduleUpdate];
     }
     return self;
 }
 
 -(void)dealloc {
+    [[CCTouchDispatcher sharedDispatcher] removeDelegate:self];
     [super dealloc];
 }
 
@@ -144,11 +121,15 @@ static const ccColor3B ccBRAWN = {110,0,0};
 
 -(void) update:(ccTime)delta
 {
-    for (CCNode* node in [self children]) {
+    for (CCNode* node in [board children]) {
         if ([node isKindOfClass:[Ball class]]) {
             Ball* ball = (Ball*)node;
             if (ball.isInHall) {
-                [self removeChild:node cleanup:YES];
+                [board removeChild:ball cleanup:YES];
+                if ([ball isMainBall]) {
+                    [Ball resetBalls:board world:world];
+                    break;
+                }
             }
         }
     }
@@ -193,5 +174,28 @@ static const ccColor3B ccBRAWN = {110,0,0};
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 #endif
+
+#pragma mark CCTargetedTouchDelegate
+
+-(BOOL) ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event {
+    CGPoint location = [Helper locationFromTouch:touch];
+    Ball* mainBall = (Ball*)[board getChildByTag:kTagMainBall];
+    
+    if ([mainBall isTouchForMe:location]) {
+        return [mainBall ccTouchBegan:touch withEvent:event];
+    }
+    return NO;
+}
+
+-(void) ccTouchMoved:(UITouch *)touch withEvent:(UIEvent *)event {
+    Ball* mainBall = (Ball*)[board getChildByTag:kTagMainBall];
+    [mainBall ccTouchMoved:touch withEvent:event];
+}
+
+-(void) ccTouchEnded:(UITouch *)touch withEvent:(UIEvent *)event {
+    Ball* mainBall = (Ball*)[board getChildByTag:kTagMainBall];
+    [mainBall ccTouchEnded:touch withEvent:event];
+}
+
 
 @end

@@ -94,11 +94,12 @@
 	
 	
 	// make the OpenGLView a child of the view controller
-	[viewController setView:glView];
+    [viewController.view addSubview:glView];
+	//[viewController setView:glView];
 	
 	// make the View Controller a child of the main window
 	[window addSubview: viewController.view];
-	
+    
 	[window makeKeyAndVisible];
 	
 	// Default texture format for PNG/BMP/TIFF/JPEG/GIF images

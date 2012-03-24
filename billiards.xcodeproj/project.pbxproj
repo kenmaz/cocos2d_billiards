@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A658588151E18B3006BCB4C /* BallTracer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A658587151E18B3006BCB4C /* BallTracer.mm */; };
 		8A66F857151888D900CFDDF3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A66F856151888D900CFDDF3 /* QuartzCore.framework */; };
 		8A66F859151888D900CFDDF3 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A66F858151888D900CFDDF3 /* OpenGLES.framework */; };
 		8A66F85B151888D900CFDDF3 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A66F85A151888D900CFDDF3 /* OpenAL.framework */; };
@@ -169,6 +170,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8A658586151E18B3006BCB4C /* BallTracer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BallTracer.h; sourceTree = "<group>"; };
+		8A658587151E18B3006BCB4C /* BallTracer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BallTracer.mm; sourceTree = "<group>"; };
 		8A66F852151888D900CFDDF3 /* billiards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = billiards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A66F856151888D900CFDDF3 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8A66F858151888D900CFDDF3 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -551,6 +554,8 @@
 			children = (
 				8A66FA52151891E800CFDDF3 /* Ball.h */,
 				8A66FA53151891E900CFDDF3 /* Ball.mm */,
+				8A658586151E18B3006BCB4C /* BallTracer.h */,
+				8A658587151E18B3006BCB4C /* BallTracer.mm */,
 				8A66FA57151A3DA300CFDDF3 /* Board.h */,
 				8A66FA58151A3DA400CFDDF3 /* Board.mm */,
 				8A66FA4115188CA800CFDDF3 /* BilliardsTable.h */,
@@ -1062,7 +1067,7 @@
 		8A66F849151888D900CFDDF3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 8A66F84C151888D900CFDDF3 /* Build configuration list for PBXProject "billiards" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1247,6 +1252,7 @@
 				8A66FA4D15188EAB00CFDDF3 /* Helper.mm in Sources */,
 				8A66FA54151891E900CFDDF3 /* Ball.mm in Sources */,
 				8A66FA59151A3DA600CFDDF3 /* Board.mm in Sources */,
+				8A658588151E18B3006BCB4C /* BallTracer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1265,7 +1271,7 @@
 					"COCOS2D_DEBUG=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
@@ -1280,7 +1286,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
@@ -1342,6 +1348,7 @@
 				8A66FA3E151888DC00CFDDF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
