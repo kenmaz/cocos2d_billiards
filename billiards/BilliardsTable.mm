@@ -10,9 +10,11 @@
 #import "Constants.h"
 #import "Helper.h"
 #import "Ball.h"
+#import "Board.h"
 
 @interface BilliardsTable (Private) 
 -(void)initBox2dWorld;
+-(void) enableBox2dDebugDrawing;
 @end
 
 @implementation BilliardsTable
@@ -28,18 +30,23 @@ static const ccColor3B ccBRAWN = {110,0,0};
 
 -(id)init {
     if ((self = [super init])) {
-        [self initBox2dWorld];
         
-        CCSprite* borad = [CCSprite spriteWithFile:@"board.png"];
-        borad.position = [Helper screenCenter];
-        [self addChild:borad];
+        [self initBox2dWorld];
+        [self enableBox2dDebugDrawing];
+        
+        // a bright background is desireable for this pinball table
+		CCLayerColor* colorLayer = [CCLayerColor layerWithColor:ccc4(222, 222, 222, 255)];
+		[self addChild:colorLayer z:-3];
+
+        Board* board = [Board setupBoradWithWorld:world];
+        [self addChild:board z:-2 tag:kTagBoard];
         
         CGPoint cp = [Helper screenCenter];
         float bw = [Ball ballWidth];
         float dy = 0.83;
         
         Ball* ball = [Ball ballWithWorld:world at:ccp(cp.x, cp.y - 120) touchable:YES];
-        [self addChild:ball];
+        [self addChild:ball z:-1];
 
         //1列目
         [self addChild:[Ball ballWithWorld:world at:ccp(cp.x            ,cp.y + 90) color:ccYELLOW]];
@@ -61,16 +68,7 @@ static const ccColor3B ccBRAWN = {110,0,0};
         [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw       ,cp.y + 90 + (bw * dy)*4) color:ccMAGENTA]];
         [self addChild:[Ball ballWithWorld:world at:ccp(cp.x + bw*2     ,cp.y + 90 + (bw * dy)*4) color:ccRED]];
         [self addChild:[Ball ballWithWorld:world at:ccp(cp.x - bw*2     ,cp.y + 90 + (bw * dy)*4) color:ccBLUE]];
-        
-        
-        /*
-        [self addChild:[Ball ballWithWorld:world at:ccp(200,100)]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(200,200)]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(300,100)]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(300,200)]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(300,300)]];
-        [self addChild:[Ball ballWithWorld:world at:ccp(300,400)]];
-*/
+
         [self scheduleUpdate];
     }
     return self;
@@ -108,7 +106,7 @@ static const ccColor3B ccBRAWN = {110,0,0};
 	
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &screenBoxShape;
-    fixtureDef.density = 0.0f;
+    fixtureDef.density = 1.0f;
     fixtureDef.restitution = 1.0f;
     fixtureDef.friction = 1.0f;
     
@@ -129,14 +127,38 @@ static const ccColor3B ccBRAWN = {110,0,0};
 	containerBody->CreateFixture(&fixtureDef);
 }
 
+-(void) enableBox2dDebugDrawing
+{
+	// Debug Draw functions
+	debugDraw = new GLESDebugDraw(PTM_RATIO);
+	world->SetDebugDraw(debugDraw);
+	
+	uint32 flags = 0;
+	flags |= b2DebugDraw::e_shapeBit;
+	flags |= b2DebugDraw::e_jointBit;
+	//flags |= b2DebugDraw::e_aabbBit;
+	//flags |= b2DebugDraw::e_pairBit;
+	//flags |= b2DebugDraw::e_centerOfMassBit;
+	debugDraw->SetFlags(flags);		
+}
+
 -(void) update:(ccTime)delta
 {
+    for (CCNode* node in [self children]) {
+        if ([node isKindOfClass:[Ball class]]) {
+            Ball* ball = (Ball*)node;
+            if (ball.isInHall) {
+                [self removeChild:node cleanup:YES];
+            }
+        }
+    }
+    
 	// The number of iterations influence the accuracy of the physics simulation. With higher values the
 	// body's velocity and position are more accurately tracked but at the cost of speed.
 	// Usually for games only 1 position iteration is necessary to achieve good results.
 	float timeStep = 0.03f;
 	int32 velocityIterations = 8;
-	int32 positionIterations = 1;
+	int32 positionIterations = 8;
 	world->Step(timeStep, velocityIterations, positionIterations);
 	
 	// for each body, get its assigned BodyNode and update the sprite's position
@@ -152,5 +174,24 @@ static const ccColor3B ccBRAWN = {110,0,0};
 		}
 	}
 }
+
+#ifdef DEBUG
+-(void) draw
+{
+	// Default GL states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
+	// Needed states:  GL_VERTEX_ARRAY, 
+	// Unneeded states: GL_TEXTURE_2D, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
+	glDisable(GL_TEXTURE_2D);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+	world->DrawDebugData();
+	
+	// restore default GL states
+	glEnable(GL_TEXTURE_2D);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+#endif
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "Ball.h"
+#import "Board.h"
 #import <math.h>
 
 @interface Ball (Private)
@@ -14,6 +15,8 @@
 @end
 
 @implementation Ball
+
+@synthesize isInHall;
 
 -(id)initWithWorld:(b2World*)world at:(CGPoint)pos touchable:(BOOL)touchable color:(ccColor3B)color {
     if ((self = [super init])) {
@@ -93,13 +96,19 @@
 	body->ApplyForce(force, body->GetWorldCenter());
 }
 
--(void) update:(ccTime)delta {/*
+-(void) update:(ccTime)delta {
+    CGPoint pos = sprite.position;
+    Board* board = (Board*)[self.parent getChildByTag:kTagBoard];
+    if ([board isInHall:pos]) {
+        isInHall = true;
+    }
+    /*
     b2Vec2 linerVelocity = body->GetLinearVelocity();
     float32 linerDumping = body->GetLinearDamping();
     float32 angularVelocity = body->GetAngularVelocity();
     float32 angularDamping = body->GetAngularDamping();
 
-    //NSLog(@"lvelocity:x=%f,y=%f ldumping=%f aVelocity=%f aDumping=%f", linerVelocity.x, linerVelocity.y, linerDumping, angularVelocity, angularDamping);
+    NSLog(@"lvelocity:x=%f,y=%f ldumping=%f aVelocity=%f aDumping=%f", linerVelocity.x, linerVelocity.y, linerDumping, angularVelocity, angularDamping);
 */}
 
 -(BOOL) isTouchForMe:(CGPoint)location {
