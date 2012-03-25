@@ -7,6 +7,13 @@
 //
 
 #import "Board.h"
+#import "Ball.h"
+
+enum {
+    kBoardCertGroupWall,
+    kBoardCertGroupHall,
+    kBoardCertGroupBall
+};
 
 @interface Board (Private)
 -(void)setup;
@@ -18,16 +25,7 @@
     if ((self = [super init])) {
         world_ = world;
         
-        //left bottom to top
-        halls_[0] = ccp(19,16);
-        halls_[1] = ccp(13, 240);
-        halls_[2] = ccp(19, 464);
-        //right bottom to top
-        halls_[3] = ccp(303, 15);
-        halls_[4] = ccp(307, 238);
-        halls_[5] = ccp(303, 464);
-        
-        CCSprite* board = [CCSprite spriteWithFile:@"board.png"];
+        CCSprite* board = [CCSprite spriteWithFile:@"board_side.png"];
         board.position = [Helper screenCenter];
         [self addChild:board];
         
@@ -43,7 +41,7 @@
 -(void) createStaticBodyWithVertices:(b2Vec2[])vertices numVertices:(int)numVertices {
 	// Create a body definition 
 	b2BodyDef bodyDef;
-	bodyDef.position = [Helper toMeters:[Helper screenCenter]];
+	bodyDef.position = [Helper toMeters:CGPointMake(0, 0)];
 	
 	b2PolygonShape shape;
 	shape.Set(vertices, numVertices);
@@ -58,73 +56,97 @@
 	body->CreateFixture(&fixtureDef);
 }
 
+static const ccColor3B ccBRAWN = {110,0,0};
+
+static ccColor3B ballColors[15] = {
+    //1列目
+    ccYELLOW,
+    //2列目
+    ccGREEN,
+    ccORANGE,
+    ccGREEN,
+    ccBLACK,
+    ccBLUE,
+    //4列目
+    ccORANGE,
+    ccBRAWN,
+    ccBRAWN,
+    ccRED,
+    //5列目
+    ccORANGE,
+    ccMAGENTA,
+    ccMAGENTA,
+    ccRED,
+    ccBLUE,
+};
+
 -(void)setup {
-    {
-        //row 1, col 1
-        int num = 4;
-        b2Vec2 verts[] = {
-            b2Vec2(-129.0f / PTM_RATIO, 226.5f / PTM_RATIO),
-            b2Vec2(132.5f / PTM_RATIO, 226.5f / PTM_RATIO),
-            b2Vec2(143.0f / PTM_RATIO, 238.5f / PTM_RATIO),
-            b2Vec2(-136.5f / PTM_RATIO, 238.5f / PTM_RATIO),
-        };
-        [self createStaticBodyWithVertices:verts numVertices:num];
+    [self setupAll:YES];
+}
+
+-(void)setupAll:(BOOL)setupAll {
+    b2Vec2 verts[b2_maxPolygonVertices];
+    int hallIndex = 0;
+    
+    NSBundle* bundle = [NSBundle mainBundle];
+    NSString* path = [bundle pathForResource:@"vertex" ofType:@"plist"];
+    NSDictionary* vertex = [NSDictionary dictionaryWithContentsOfFile:path];;
+
+    NSArray* fixtures = [[[vertex objectForKey:@"bodies"] objectForKey:@"board_side"] objectForKey:@"fixtures"];
+    for (NSDictionary* fixture in fixtures) {
+        NSNumber* groupIndex = [fixture objectForKey:@"filter_groupIndex"];
+        int index = [groupIndex intValue];
+        
+        if (index == kBoardCertGroupWall && setupAll) {
+            NSArray* polygons = [fixture objectForKey:@"polygons"];
+            for (NSArray* polygon in polygons) {
+                NSLog(@"polygon");
+                int num = 0;
+                for (NSString* polygonStr in polygon) {
+                    CGPoint point = CGPointFromString(polygonStr);
+                    verts[num] = b2Vec2(point.x / PTM_RATIO, point.y / PTM_RATIO);
+                    num++;
+                    
+                    NSLog(@"x=%f, y=%f", point.x, point.y);
+                }
+                [self createStaticBodyWithVertices:verts numVertices:num];
+            }
+        }
+        else if (index == kBoardCertGroupHall && setupAll) {
+            NSString* hallPos = [[fixture objectForKey:@"circle"] objectForKey:@"position"];
+            halls_[hallIndex] = CGPointFromString(hallPos);
+            hallIndex++;
+        }
+        else if (index == kBoardCertGroupBall) {
+            CGPoint ballPos = CGPointFromString([[fixture objectForKey:@"circle"] objectForKey:@"position"]);
+            
+            NSString* ballId = [fixture objectForKey:@"id"];
+            if ([ballId isEqualToString:@"main"]) {
+                Ball* ball = [Ball ballWithWorld:world_ at:ballPos touchable:NO];
+                ball.tag = kTagMainBall;
+                [self addChild:ball];
+
+            } else {
+                int ballNumber = [ballId intValue];
+                ccColor3B ballColor = ballColors[ballNumber - 1];
+                [self addChild:[Ball ballWithWorld:world_ at:ballPos color:ballColor]];
+                 
+            }
+        }
     }
-    {
-        //row 1, col 1
-        int num = 4;
-        b2Vec2 verts[] = {
-            b2Vec2(146.5f / PTM_RATIO, 214.0f / PTM_RATIO),
-            b2Vec2(147.0f / PTM_RATIO, 12.5f / PTM_RATIO),
-            b2Vec2(158.0f / PTM_RATIO, 6.0f / PTM_RATIO),
-            b2Vec2(158.5f / PTM_RATIO, 225.5f / PTM_RATIO),
-        };
-        [self createStaticBodyWithVertices:verts numVertices:num];
+}
+
+-(void)resetBalls {
+    NSMutableArray* ary = [[[NSMutableArray alloc] init] autorelease];
+    for (CCNode* node in self.children) {
+        if ([node isKindOfClass:[Ball class]]) {
+            [ary addObject:node];
+        }
     }
-    {
-        //row 1, col 1
-        int num = 4;
-        b2Vec2 verts[] = {
-            b2Vec2(147.0f / PTM_RATIO, -10.5f / PTM_RATIO),
-            b2Vec2(147.2f / PTM_RATIO, -213.0f / PTM_RATIO),
-            b2Vec2(159.0f / PTM_RATIO, -228.5f / PTM_RATIO),
-            b2Vec2(159.0f / PTM_RATIO, -0.7f / PTM_RATIO),
-        };
-        [self createStaticBodyWithVertices:verts numVertices:num];
+    for (CCNode* ball in ary) {
+        [self removeChild:ball cleanup:YES];
     }
-    {
-        //row 1, col 1
-        int num = 4;
-        b2Vec2 verts[] = {
-            b2Vec2(131.7f / PTM_RATIO, -226.5f / PTM_RATIO),
-            b2Vec2(-130.2f / PTM_RATIO, -227.7f / PTM_RATIO),
-            b2Vec2(-141.7f / PTM_RATIO, -238.7f / PTM_RATIO),
-            b2Vec2(142.7f / PTM_RATIO, -238.7f / PTM_RATIO),
-        };
-        [self createStaticBodyWithVertices:verts numVertices:num];
-    }
-    {
-        //row 1, col 1
-        int num = 4;
-        b2Vec2 verts[] = {
-            b2Vec2(-145.0f / PTM_RATIO, -213.0f / PTM_RATIO),
-            b2Vec2(-145.0f / PTM_RATIO, -12.2f / PTM_RATIO),
-            b2Vec2(-159.0f / PTM_RATIO, -6.5f / PTM_RATIO),
-            b2Vec2(-159.0f / PTM_RATIO, -225.2f / PTM_RATIO)
-        };
-        [self createStaticBodyWithVertices:verts numVertices:num];
-    }
-    {
-        //row 1, col 1
-        int num = 4;
-        b2Vec2 verts[] = {
-            b2Vec2(-145.2f / PTM_RATIO, 214.0f / PTM_RATIO),
-            b2Vec2(-158.7f / PTM_RATIO, 222.7f / PTM_RATIO),
-            b2Vec2(-158.7f / PTM_RATIO, 2.2f / PTM_RATIO),
-            b2Vec2(-145.2f / PTM_RATIO, 12.5f / PTM_RATIO)
-        };
-        [self createStaticBodyWithVertices:verts numVertices:num];
-    }
+    [self setupAll:NO];
 }
 
 -(BOOL)isInHall:(CGPoint)pos {

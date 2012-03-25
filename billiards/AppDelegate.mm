@@ -94,9 +94,14 @@
 	
 	
 	// make the OpenGLView a child of the view controller
-    [viewController.view addSubview:glView];
-	//[viewController setView:glView];
-	
+    //[viewController.view addSubview:glView];
+	[viewController setView:glView];
+
+	//広告
+    UIView* adview = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)] autorelease];
+    adview.backgroundColor = [UIColor whiteColor];
+    [glView addSubview:adview];
+
 	// make the View Controller a child of the main window
 	[window addSubview: viewController.view];
     

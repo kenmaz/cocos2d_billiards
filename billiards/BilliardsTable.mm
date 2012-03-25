@@ -41,7 +41,7 @@
         board = [Board setupBoradWithWorld:world];
         [self addChild:board z:-2 tag:kTagBoard];
         
-        [Ball setupBalls:board world:world];
+        //[Ball setupBalls:board world:world];
 
         [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:NO];
         
@@ -127,7 +127,7 @@
             if (ball.isInHall) {
                 [board removeChild:ball cleanup:YES];
                 if ([ball isMainBall]) {
-                    [Ball resetBalls:board world:world];
+                    [board resetBalls];
                     break;
                 }
             }

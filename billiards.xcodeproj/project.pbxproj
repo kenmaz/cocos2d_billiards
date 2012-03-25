@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A3C77FA151F247100B6EA29 /* board_side.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A3C77F9151F247100B6EA29 /* board_side.png */; };
+		8A3C77FE151F523700B6EA29 /* vertex.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8A3C77FD151F523700B6EA29 /* vertex.plist */; };
 		8A658588151E18B3006BCB4C /* BallTracer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A658587151E18B3006BCB4C /* BallTracer.mm */; };
 		8A66F857151888D900CFDDF3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A66F856151888D900CFDDF3 /* QuartzCore.framework */; };
 		8A66F859151888D900CFDDF3 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A66F858151888D900CFDDF3 /* OpenGLES.framework */; };
@@ -170,6 +172,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8A3C77F9151F247100B6EA29 /* board_side.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = board_side.png; path = Resources/board_side.png; sourceTree = "<group>"; };
+		8A3C77FD151F523700B6EA29 /* vertex.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = vertex.plist; path = Resources/vertex.plist; sourceTree = "<group>"; };
 		8A658586151E18B3006BCB4C /* BallTracer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BallTracer.h; sourceTree = "<group>"; };
 		8A658587151E18B3006BCB4C /* BallTracer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BallTracer.mm; sourceTree = "<group>"; };
 		8A66F852151888D900CFDDF3 /* billiards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = billiards.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -584,8 +588,10 @@
 		8A66F867151888D900CFDDF3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8A3C77FD151F523700B6EA29 /* vertex.plist */,
 				8A66FA5F151A3FF200CFDDF3 /* ball.png */,
 				8A66FA4E1518901100CFDDF3 /* board.png */,
+				8A3C77F9151F247100B6EA29 /* board_side.png */,
 				8A66F868151888D900CFDDF3 /* Default.png */,
 				8A66F86A151888D900CFDDF3 /* fps_images.png */,
 				8A66F86C151888D900CFDDF3 /* Icon-72.png */,
@@ -1103,6 +1109,8 @@
 				8A66FA39151888DC00CFDDF3 /* blocks.png in Resources */,
 				8A66FA4F1518901100CFDDF3 /* board.png in Resources */,
 				8A66FA60151A3FF200CFDDF3 /* ball.png in Resources */,
+				8A3C77FA151F247100B6EA29 /* board_side.png in Resources */,
+				8A3C77FE151F523700B6EA29 /* vertex.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

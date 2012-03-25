@@ -28,19 +28,6 @@
  }
  */
 
-/*
- // Implement loadView to create a view hierarchy programmatically, without using a nib.
- - (void)loadView {
- }
- */
-
-/*
- // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
- - (void)viewDidLoad {
-	[super viewDidLoad];
- }
- */
-
 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -84,8 +71,8 @@
 	// Sample: Autorotate only in landscpe mode
 	//
 	// return YES for the supported orientations
-	return ( UIInterfaceOrientationIsPortrait( interfaceOrientation ));
-	//return ( UIInterfaceOrientationIsLandscape( interfaceOrientation ) );
+	//  return ( UIInterfaceOrientationIsPortrait( interfaceOrientation ));
+	return ( UIInterfaceOrientationIsLandscape( interfaceOrientation ) );
 	
 #else
 #error Unknown value in GAME_AUTOROTATION

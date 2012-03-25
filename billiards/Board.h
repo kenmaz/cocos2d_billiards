@@ -21,4 +21,6 @@
 }
 +(id) setupBoradWithWorld:(b2World*)world;
 -(BOOL)isInHall:(CGPoint)pos;
+-(void)resetBalls;
+
 @end
